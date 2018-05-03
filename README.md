@@ -1,8 +1,8 @@
 # flutter_gank
 
-A new Flutter application.
+通过gank的api学习flutter的基础知识
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+flutter中文网
+[documentation](https://flutterchina.club/).
