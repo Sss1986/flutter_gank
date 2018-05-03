@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_gank/bean/fulibean.dart';
 import 'ImageDetail.dart';
+import 'PhotoHero.dart';
 
 
 class homepage extends StatefulWidget {
@@ -102,17 +103,35 @@ class homepageState extends State<homepage> {
           itemCount: result.length,
           itemBuilder: (BuildContext context, int index) {
             return new GestureDetector(
-              onTap: (){
-                Navigator.push(context, new MaterialPageRoute(builder:(context) => new ImageDetail(url :result[index]['url']) ));
-              },
               child: new Card(
                 child: new Column(
                   children: <Widget>[
-                    new Image(
-                      width: 320.0,
-                      image: new NetworkImage(result[index]['url']),
-                    ),
-                    new Center(child: new Text(result[index]['desc'])),
+                    new PhotoHero(
+                        photo: result[index]['url'], width: 300.0, onTap: () {
+                      Navigator.of(context).push(new MaterialPageRoute<Null>(
+                          builder: (BuildContext context) {
+                            return new Scaffold(
+                              appBar: new AppBar(
+                                backgroundColor: Colors.redAccent,
+                                title: new Text("圖片詳情"),
+                              ),
+                              body: new Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: new PhotoHero(
+                                    photo: result[index]['url'],
+                                    width: 400.0,
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },)
+                              ),
+                            );
+                          }));
+                    })
+//                    new Image(
+//                      width: 320.0,
+//                      image: new NetworkImage(result[index]['url']),
+//                    ),
+//                    new Center(child: new Text(result[index]['desc'])),
 
                   ],
                 ),
@@ -123,3 +142,4 @@ class homepageState extends State<homepage> {
   }
 
 }
+
