@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_gank/bean/fulibean.dart';
+import 'ImageDetail.dart';
 
 
 class homepage extends StatefulWidget {
@@ -13,6 +14,7 @@ class homepageState extends State<homepage> {
   var text = "首页";
   List body2 = new List();
   List result = new List();
+
   _getData(int itemCount, int pageNo) async {
     var url = "http://gank.io/api/data/福利/$itemCount/$pageNo";
     var httpClient = new HttpClient();
@@ -99,15 +101,21 @@ class homepageState extends State<homepage> {
           padding: new EdgeInsets.all(8.0),
           itemCount: result.length,
           itemBuilder: (BuildContext context, int index) {
-            return new Card(
-              child: new Column(
-                children: <Widget>[
-                  new Image(
+            return new GestureDetector(
+              onTap: (){
+                Navigator.push(context, new MaterialPageRoute(builder:(context) => new ImageDetail(url :result[index]['url']) ));
+              },
+              child: new Card(
+                child: new Column(
+                  children: <Widget>[
+                    new Image(
                       width: 320.0,
                       image: new NetworkImage(result[index]['url']),
-                  ),
-                  new Center(child: new Text(result[index]['desc']))
-                ],
+                    ),
+                    new Center(child: new Text(result[index]['desc'])),
+
+                  ],
+                ),
               ),
             );
           }),
