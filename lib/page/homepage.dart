@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_gank/bean/fulibean.dart';
 import 'PhotoHero.dart';
+import 'package:http/http.dart';
 
 
 class homepage extends StatefulWidget {
@@ -11,29 +14,34 @@ class homepage extends StatefulWidget {
 }
 
 class homepageState extends State<homepage> {
-  var text = "首页";
+  var type = 'all';
+  var count = 20;
+  var pageNo = 1;
   List body2 = new List();
   List result = new List();
-  _getData(int itemCount, int pageNo) async {
-    var url = "http://gank.io/api/data/福利/$itemCount/$pageNo";
-    var httpClient = new HttpClient();
-    try {
-      var requst = await httpClient.getUrl(Uri.parse(url));
-      var response = await requst.close();
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(UTF8.decoder).join();
-        var body = JSON.decode(json);
-        body2 = body["results"];
-        print(body2.length.toString());
-        setState(() {
-          result = body2;
-        });
-      }
-    } catch (ex) {
-      print(ex);
-    }
+
+
+  _getData(String type,int count,int pageNo) async {
+    var res = await _getString(type,count,pageNo);
     if (!mounted) return;
+    setState(() {
+      result = JSON.decode(res)['results'];
+    });
   }
+
+  Future<String> _getString(String type,int count,int pageNo) async {
+    var url = "http://gank.io/api/data/$type/$count/$pageNo";
+    var httpClient = new HttpClient();
+    var requst = await httpClient.getUrl(Uri.parse(url));
+    var response = await requst.close();
+    return await response.transform(UTF8.decoder).join();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -55,40 +63,63 @@ class homepageState extends State<homepage> {
               ),
             ),
             new ListTile(
-              title: new Text("新闻"),
-              leading: new Icon(Icons.fiber_new),
+              title: new Text("全部"),
+              leading: new Icon(Icons.star_half),
               onTap: () {
-                _getData(50, 2);
+                _getData(type = "all",count,pageNo);
                 Navigator.of(context).pop();
               },
             ),
             new ListTile(
-              title: new Text("美图"),
+              title: new Text("福利"),
               leading: new Icon(Icons.image),
               onTap: () {
-                _getData(50, 3);
+                _getData(type = "福利",count,pageNo);
                 Navigator.of(context).pop();
               },
             ),
             new ListTile(
-              title: new Text("视频"),
-              leading: new Icon(Icons.video_label),
+              title: new Text("Android"),
+              leading: new Icon(Icons.android),
               onTap: () {
-                _getData(50, 4);
+                setState(() {
+                  type = "Android";
+                  count = 20;
+                  pageNo = 1;
+                });
+                _getData(type = "Android",count,pageNo);
                 Navigator.of(context).pop();
               },
             ),
             new ListTile(
-              title: new Text("游戏"),
+              title: new Text("iOS"),
+              leading: new Icon(Icons.format_align_justify),
+              onTap: () {
+                _getData(type = "iOS",count,pageNo);
+                Navigator.of(context).pop();
+              },
+            ),
+            new ListTile(
+              title: new Text("休息视频"),
+              leading: new Icon(Icons.video_library),
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new ListTile(
+              title: new Text("前端"),
+              leading: new Icon(Icons.web),
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new ListTile(
+              title: new Text("拓展资源"),
               leading: new Icon(Icons.games),
               onTap: () {
-                _getData(50, 5);
                 Navigator.of(context).pop();
               },
             ),
-            new Divider(),
-
-
           ],
         ),
       ),
@@ -103,28 +134,29 @@ class homepageState extends State<homepage> {
               child: new Card(
                 child: new Column(
                   children: <Widget>[
-                    new PhotoHero(
-                        photo: result[index]['url'], width: 300.0, onTap: () {
-                      Navigator.of(context).push(new MaterialPageRoute<Null>(
-                          builder: (BuildContext context) {
-                            return new Scaffold(
-                              appBar: new AppBar(
-                                backgroundColor: Colors.redAccent,
-                                title: new Text("圖片詳情"),
-                              ),
-                              body: new Container(
-                                  child: new Center(
-                                    child: new PhotoHero(
-                                      photo: result[index]['url'],
-                                      width: 400.0,
-                                      onTap: () {
-                                        Navigator.of(context).pop();
-                                      },),
-                                  ),
-                              ),
-                            );
-                          }));
-                    })
+                result[index]['url'].toString().endsWith(".jpg") || result[index]['url'].toString().endsWith(".jpeg")  ==  true ? new PhotoHero(
+              photo: result[index]['url'], width: 300.0, onTap: () {
+                Navigator.of(context).push(new MaterialPageRoute<Null>(
+                    builder: (BuildContext context) {
+                      return new Scaffold(
+                        appBar: new AppBar(
+                          backgroundColor: Colors.redAccent,
+                          title: new Text("圖片詳情"),
+                        ),
+                        body: new Container(
+                          child: new Center(
+                            child: new PhotoHero(
+                              photo: result[index]['url'],
+                              width: 400.0,
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },),
+                          ),
+                        ),
+                      );
+                    }));
+              }) : new Container(child: new Center(child: new Text("這種模式 我還沒有解析")),)
+
                   ],
                 ),
               ),
@@ -132,6 +164,5 @@ class homepageState extends State<homepage> {
           }),
     );
   }
-
 }
 
