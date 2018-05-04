@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_gank/bean/fulibean.dart';
-import 'ImageDetail.dart';
 import 'PhotoHero.dart';
 
 
@@ -15,7 +14,6 @@ class homepageState extends State<homepage> {
   var text = "首页";
   List body2 = new List();
   List result = new List();
-
   _getData(int itemCount, int pageNo) async {
     var url = "http://gank.io/api/data/福利/$itemCount/$pageNo";
     var httpClient = new HttpClient();
@@ -36,7 +34,6 @@ class homepageState extends State<homepage> {
     }
     if (!mounted) return;
   }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -116,23 +113,18 @@ class homepageState extends State<homepage> {
                                 title: new Text("圖片詳情"),
                               ),
                               body: new Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: new PhotoHero(
-                                    photo: result[index]['url'],
-                                    width: 400.0,
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                    },)
+                                  child: new Center(
+                                    child: new PhotoHero(
+                                      photo: result[index]['url'],
+                                      width: 400.0,
+                                      onTap: () {
+                                        Navigator.of(context).pop();
+                                      },),
+                                  ),
                               ),
                             );
                           }));
                     })
-//                    new Image(
-//                      width: 320.0,
-//                      image: new NetworkImage(result[index]['url']),
-//                    ),
-//                    new Center(child: new Text(result[index]['desc'])),
-
                   ],
                 ),
               ),
