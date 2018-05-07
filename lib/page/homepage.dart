@@ -162,6 +162,7 @@ class HomePageState extends State<homepage> {
                       })
                     ]) : new Column(
                   children: <Widget>[
+                    
                     new Text(result[index]['desc'])
                   ],),
               ),
